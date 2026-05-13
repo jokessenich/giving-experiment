@@ -520,25 +520,36 @@ footer.bene .colophon {
   margin-bottom: 36px;
   line-height: 1.6;
 }
-.field { margin-bottom: 28px; }
+
+/* The question goes BIG. Then a small hint. Then the input field. */
+.field { margin-bottom: 36px; }
 .field label {
   display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: 8px;
+  font-family: 'Fraunces', serif;
   font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-bottom: 4px;
+  line-height: 1.25;
+  font-variation-settings: "opsz" 30;
 }
 .field label .opt {
-  text-transform: none;
-  letter-spacing: 0;
-  font-style: italic;
-  color: var(--ink-faded);
   font-family: 'Fraunces', serif;
-  font-size: 14px;
-  margin-left: 6px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink-faded);
+  font-size: 16px;
+  margin-left: 4px;
+}
+/* Small explanatory hint, lives BETWEEN label and input */
+.field .hint {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-faded);
+  margin: 0 0 12px;
+  line-height: 1.4;
   font-weight: 400;
 }
 .field input, .field textarea, .field select {
@@ -549,7 +560,7 @@ footer.bene .colophon {
   background: transparent;
   border: none;
   border-bottom: 1px solid var(--rule);
-  padding: 6px 0 8px;
+  padding: 8px 0 10px;
   outline: none;
   transition: border-color 0.2s ease;
   font-variation-settings: "opsz" 14;
@@ -559,13 +570,10 @@ footer.bene .colophon {
 .field input:focus, .field textarea:focus, .field select:focus {
   border-color: var(--rust);
 }
-.field .hint {
-  font-family: 'Caveat', cursive;
-  font-size: 17px;
+.field input::placeholder, .field textarea::placeholder {
   color: var(--ink-faded);
-  margin-top: 6px;
-  line-height: 1.3;
-  font-weight: 500;
+  opacity: 0.6;
+  font-style: italic;
 }
 
 /* Inline two-input row: "[place] in [city]" */
@@ -581,7 +589,7 @@ footer.bene .colophon {
 }
 .field .inline-where input {
   border-bottom: none;
-  padding: 6px 0 8px;
+  padding: 8px 0 10px;
   background: transparent;
 }
 .field .inline-where input:first-child {
@@ -600,27 +608,124 @@ footer.bene .colophon {
   flex-shrink: 0;
   padding-bottom: 4px;
 }
-.field.checkbox {
+
+/* Money field with $ prefix */
+.field .money-row {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  background: var(--paper-warm);
-  padding: 14px 18px;
-  border-left: 3px solid var(--rust);
+  align-items: baseline;
+  gap: 8px;
+  border-bottom: 1px solid var(--rule);
+  transition: border-color 0.2s ease;
 }
-.field.checkbox input { width: auto; margin-top: 6px; }
-.field.checkbox label {
-  margin-bottom: 0;
+.field .money-row:focus-within {
+  border-color: var(--rust);
+}
+.field .money-row .dollar {
   font-family: 'Fraunces', serif;
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 17px;
+  font-size: 22px;
   color: var(--ink);
-  font-weight: 400;
-  cursor: pointer;
+  flex-shrink: 0;
+  padding-bottom: 4px;
+  font-weight: 500;
+}
+.field .money-row input {
+  border-bottom: none;
   flex: 1;
 }
-.submit-row { margin-top: 36px; display: flex; align-items: baseline; gap: 18px; }
+
+/* "Add something else?" disclosure toggle */
+.add-toggle {
+  margin: 0 0 36px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--rust);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  border-bottom: 1px dashed var(--rust);
+  transition: color 0.2s ease;
+}
+.add-toggle:hover {
+  color: var(--rust-deep);
+  border-color: var(--rust-deep);
+}
+
+/* The "I kept it" toggle — looks like a real action, not a statement */
+.kept-toggle {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: 'Fraunces', serif;
+  font-size: 17px;
+  color: var(--ink);
+  background: var(--paper-warm);
+  border: 1px solid var(--rule);
+  padding: 16px 20px 16px 52px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+  margin-bottom: 36px;
+  line-height: 1.4;
+  border-radius: 2px;
+}
+.kept-toggle::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--ink-faded);
+  border-radius: 3px;
+  background: var(--paper);
+  transition: all 0.15s ease;
+}
+.kept-toggle:hover {
+  border-color: var(--rust);
+}
+.kept-toggle:hover::before {
+  border-color: var(--rust);
+}
+.kept-toggle.active {
+  background: rgba(160,72,41,0.08);
+  border-color: var(--rust);
+  color: var(--ink);
+}
+.kept-toggle.active::before {
+  background: var(--rust);
+  border-color: var(--rust);
+}
+.kept-toggle.active::after {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 50%;
+  transform: translateY(-65%) rotate(45deg);
+  width: 6px;
+  height: 11px;
+  border: solid var(--paper);
+  border-width: 0 2px 2px 0;
+}
+.kept-toggle .kept-label {
+  display: block;
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+.kept-toggle .kept-hint {
+  display: block;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-faded);
+  line-height: 1.3;
+}
+
+.submit-row { margin-top: 40px; display: flex; align-items: baseline; gap: 18px; }
 button.submit, a.submit {
   font-family: 'Fraunces', serif;
   font-style: italic;
@@ -981,6 +1086,28 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   .tally { flex-direction: column; }
   .tally .stat { border-right: none; border-bottom: 1px solid var(--rule); padding: 12px 0; }
   .tally .stat:last-child { border-bottom: none; }
+  /* Form labels stay readable but slightly smaller on mobile */
+  .field label { font-size: 20px; }
+  /* On mobile, the two place/city inputs stack but each gets its own underline */
+  .field .inline-where {
+    flex-wrap: wrap;
+    gap: 0;
+    border-bottom: none;
+  }
+  .field .inline-where input:first-child,
+  .field .inline-where input:last-child {
+    flex: 1 1 100%;
+    border-bottom: 1px solid var(--rule);
+    transition: border-color 0.2s ease;
+  }
+  .field .inline-where input:focus { border-color: var(--rust); }
+  .field .inline-where .inline-where-conn {
+    flex: 1 1 100%;
+    font-size: 14px;
+    color: var(--ink-faded);
+    padding: 6px 0 0;
+    text-align: left;
+  }
 }
 
 /* Print styles for the receipt card */

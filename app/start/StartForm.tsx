@@ -62,9 +62,8 @@ export function StartForm({ batches }: { batches: string[] }) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="field">
-        <label htmlFor="batch">
-          batch <span className="opt">— this chain&apos;s name</span>
-        </label>
+        <label htmlFor="batch">This chain&apos;s name</label>
+        <div className="hint">A mushroom name for the batch this chain belongs to.</div>
         <select
           id="batch"
           value={batch}
@@ -74,12 +73,11 @@ export function StartForm({ batches }: { batches: string[] }) {
             <option key={b} value={b}>{b}</option>
           ))}
         </select>
-        <div className="hint">a mushroom name for the batch this chain belongs to.</div>
       </div>
 
       <div className="field">
         <label htmlFor="name">
-          your name <span className="opt">— optional</span>
+          Your name <span className="opt">— optional</span>
         </label>
         <input
           id="name"
@@ -92,8 +90,9 @@ export function StartForm({ batches }: { batches: string[] }) {
 
       <div className="field">
         <label htmlFor="place">
-          where are you putting it? <span className="opt">— optional</span>
+          Where are you putting it? <span className="opt">— optional</span>
         </label>
+        <div className="hint">Just so the journey has a starting point on the map.</div>
         <div className="inline-where">
           <input
             id="place"
@@ -112,23 +111,23 @@ export function StartForm({ batches }: { batches: string[] }) {
             placeholder="Ann Arbor, MI"
           />
         </div>
-        <div className="hint">just so the journey has a starting point on the map.</div>
       </div>
 
       <div className="field">
         <label htmlFor="note">
-          what&apos;s inside <span className="opt">— optional</span>
+          What&apos;s inside? <span className="opt">— optional</span>
         </label>
         <textarea
           id="note"
           value={starterNote}
           onChange={(e) => setStarterNote(e.target.value)}
-          placeholder="a poem, $20, a paperback i loved..."
+          placeholder="$20, a paperback i loved, a poem..."
         />
       </div>
 
       <div className="field">
-        <label htmlFor="token">starter passphrase</label>
+        <label htmlFor="token">Starter passphrase</label>
+        <div className="hint">While we&apos;re small, only Johnny can start chains. This keeps things tended to.</div>
         <input
           id="token"
           type="password"
@@ -137,7 +136,6 @@ export function StartForm({ batches }: { batches: string[] }) {
           placeholder=""
           required
         />
-        <div className="hint">while we&apos;re small, only Johnny can start chains. this keeps things tended to.</div>
       </div>
 
       <div className="submit-row">

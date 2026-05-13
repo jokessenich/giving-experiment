@@ -14,6 +14,7 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
   const [note, setNote] = useState('');
   const [amountAdded, setAmountAdded] = useState('');
   const [addedWhat, setAddedWhat] = useState('');
+  const [showAddedWhat, setShowAddedWhat] = useState(false);
   const [endedChain, setEndedChain] = useState(false);
   const [keptFor, setKeptFor] = useState('');
 
@@ -43,7 +44,7 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
           city: city.trim(),
           note: note.trim() || null,
           amount_added: endedChain ? null : parsedAmount,
-          added_what: endedChain ? null : (addedWhat.trim() || null),
+          added_what: endedChain ? null : (showAddedWhat ? (addedWhat.trim() || null) : null),
           ended_chain: endedChain,
           kept_for: endedChain ? (keptFor.trim() || null) : null,
         }),
@@ -79,7 +80,8 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
   return (
     <form onSubmit={handleSubmit}>
       <div className="field">
-        <label htmlFor="code">your code</label>
+        <label htmlFor="code">Your code</label>
+        <div className="hint">It&apos;s on the card that came with the package.</div>
         <input
           id="code"
           type="text"
@@ -91,11 +93,11 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
           spellCheck={false}
           required
         />
-        <div className="hint">it&apos;s on the card that came with the package.</div>
       </div>
 
       <div className="field">
-        <label htmlFor="place">where did you find it?</label>
+        <label htmlFor="place">Where did you find it?</label>
+        <div className="hint">The city is enough — the place is optional.</div>
         <div className="inline-where">
           <input
             id="place"
@@ -115,12 +117,11 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
             required
           />
         </div>
-        <div className="hint">the place is optional. the city is enough — no need to be exact.</div>
       </div>
 
       <div className="field">
         <label htmlFor="name">
-          your name <span className="opt">— optional</span>
+          Your name <span className="opt">— optional</span>
         </label>
         <input
           id="name"
@@ -131,31 +132,26 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
         />
       </div>
 
-      <div className="field checkbox">
-        <input
-          id="ended"
-          type="checkbox"
-          checked={endedChain}
-          onChange={(e) => setEndedChain(e.target.checked)}
-        />
-        <label htmlFor="ended">
-          I needed this and kept it. the chain ends here.
-        </label>
-      </div>
+      {/* The "I kept it" toggle, set off as its own visual element */}
+      <button
+        type="button"
+        className={`kept-toggle${endedChain ? ' active' : ''}`}
+        onClick={() => setEndedChain(!endedChain)}
+        aria-pressed={endedChain}
+      >
+        <span className="kept-label">I needed this and kept it.</span>
+        <span className="kept-hint">tap if the chain ends here.</span>
+      </button>
 
       {!endedChain && (
         <>
           <div className="field">
             <label htmlFor="amount">
-              how much did you add? <span className="opt">— optional</span>
+              How much did you add? <span className="opt">— optional</span>
             </label>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, borderBottom: '1px solid var(--rule)' }}>
-              <span style={{
-                fontFamily: 'Fraunces, serif',
-                fontSize: 22,
-                color: 'var(--ink-soft)',
-                paddingTop: 6,
-              }}>$</span>
+            <div className="hint">Most folks add a few bucks before sending it on.</div>
+            <div className="money-row">
+              <span className="dollar">$</span>
               <input
                 id="amount"
                 type="text"
@@ -163,48 +159,58 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
                 value={amountAdded}
                 onChange={(e) => setAmountAdded(e.target.value)}
                 placeholder="20"
-                style={{ flex: 1, borderBottom: 'none' }}
               />
             </div>
-            <div className="hint">most folks add a few bucks before sending it on. but anything counts.</div>
           </div>
 
-          <div className="field">
-            <label htmlFor="added">
-              or, something else <span className="opt">— optional</span>
-            </label>
-            <input
-              id="added"
-              type="text"
-              value={addedWhat}
-              onChange={(e) => setAddedWhat(e.target.value)}
-              placeholder="e.g. a watercolor i made, a paperback i loved..."
-            />
-            <div className="hint">art, a book, a letter — whatever felt right.</div>
-          </div>
+          {!showAddedWhat ? (
+            <button
+              type="button"
+              className="add-toggle"
+              onClick={() => setShowAddedWhat(true)}
+            >
+              + add something other than money?
+            </button>
+          ) : (
+            <div className="field">
+              <label htmlFor="added">
+                What else did you add? <span className="opt">— optional</span>
+              </label>
+              <div className="hint">Art, a book, a letter — whatever felt right.</div>
+              <input
+                id="added"
+                type="text"
+                value={addedWhat}
+                onChange={(e) => setAddedWhat(e.target.value)}
+                placeholder="a watercolor i made"
+                autoFocus
+              />
+            </div>
+          )}
         </>
       )}
 
       {endedChain && (
         <div className="field">
           <label htmlFor="kept">
-            what did you do with it? <span className="opt">— only if you want to share</span>
+            What did you do with it? <span className="opt">— only if you want to share</span>
           </label>
+          <div className="hint">Whatever you write here will show up on the homepage.</div>
           <textarea
             id="kept"
             value={keptFor}
             onChange={(e) => setKeptFor(e.target.value)}
-            placeholder="e.g. groceries this week, my daughter's medicine, a long bus ride home..."
+            placeholder="groceries this week, my daughter's medicine, a long bus ride home..."
             maxLength={300}
           />
-          <div className="hint">whatever you write here will show up on the homepage.</div>
         </div>
       )}
 
       <div className="field">
         <label htmlFor="note">
-          a note <span className="opt">— optional</span>
+          A note <span className="opt">— optional</span>
         </label>
+        <div className="hint">Whatever you write here will show up on the homepage.</div>
         <textarea
           id="note"
           value={note}
@@ -214,7 +220,6 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
             : "anything you want to leave in the world about this."}
           maxLength={500}
         />
-        <div className="hint">whatever you write here will show up on the homepage.</div>
       </div>
 
       <div className="submit-row">

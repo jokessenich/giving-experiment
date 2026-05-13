@@ -98,9 +98,11 @@ export default async function Home() {
       <section className="prose">
         <span className="note-head">so, what is this?</span>
         <p>
-          People put money, art, a book, a letter — whatever feels right — into a package
-          and send it out into the world. If the person who finds it needs it, they keep it.
-          If they don&apos;t, they add something of their own and pass it on.
+          A small experiment in giving directly, person to person. Someone tucks a few
+          dollars (or a little more) into a package and sends it out. If the person who
+          finds it needs it, they keep it with our love. If they don&apos;t, they add a little
+          of their own and pass it on. Sometimes people add a book, or a poem, or
+          something they made — but mostly, it&apos;s money. Quiet help, traveling.
         </p>
         <p>
           Each package carries a card with a code on it. When you receive one, you can come
@@ -114,7 +116,7 @@ export default async function Home() {
         <div className="head">how it works</div>
         <div className="step"><div className="num">1.</div><div className="text">You receive a small package with a card inside.</div></div>
         <div className="step"><div className="num">2.</div><div className="text">If you need what&apos;s in it, take it with our love.</div></div>
-        <div className="step"><div className="num">3.</div><div className="text">If you don&apos;t, add something and send it onward.</div></div>
+        <div className="step"><div className="num">3.</div><div className="text">If you don&apos;t, add a few dollars and send it onward.</div></div>
         <div className="step"><div className="num">4.</div><div className="text">Either way, scan the card and log where it landed.</div></div>
       </section>
 

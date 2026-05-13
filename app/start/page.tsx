@@ -14,10 +14,10 @@ export default function StartPage() {
       <div className="lede">— a small thing, sent out into the world.</div>
 
       <p className="intro">
-        Pick something to put in a package — money, art, a book, a kind letter. Fill in
-        what you&apos;d like (everything is optional), and we&apos;ll give you back a small card to
-        print and tuck inside. Then mail it to someone. Or leave it on a bench. The rest
-        is up to whoever finds it.
+        Put a few dollars in a package — or more, if you can — along with the small card
+        we&apos;ll give you. Mail it to someone, or leave it where it might be found. Whoever
+        opens it gets to choose: keep it if they need it, or add a little more and pass
+        it on.
       </p>
 
       <StartForm batches={[...MUSHROOM_BATCHES]} />
