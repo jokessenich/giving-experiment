@@ -557,48 +557,43 @@ footer.bene .colophon {
   font-family: 'Fraunces', serif;
   font-size: 19px;
   color: var(--ink);
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--rule);
-  padding: 8px 0 10px;
+  background: #fdf9ed;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 12px 14px;
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: all 0.15s ease;
   font-variation-settings: "opsz" 14;
   appearance: none;
+  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04);
 }
-.field textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.field input:hover, .field textarea:hover, .field select:hover {
+  border-color: var(--ink-faded);
+}
 .field input:focus, .field textarea:focus, .field select:focus {
   border-color: var(--rust);
+  background: #fffcf2;
+  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04), 0 0 0 3px rgba(160, 72, 41, 0.08);
 }
 .field input::placeholder, .field textarea::placeholder {
   color: var(--ink-faded);
-  opacity: 0.6;
+  opacity: 0.65;
   font-style: italic;
 }
 
 /* Inline two-input row: "[place] in [city]" */
 .field .inline-where {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  border-bottom: 1px solid var(--rule);
-  transition: border-color 0.2s ease;
-}
-.field .inline-where:focus-within {
-  border-color: var(--rust);
+  align-items: stretch;
+  gap: 8px;
 }
 .field .inline-where input {
-  border-bottom: none;
-  padding: 8px 0 10px;
-  background: transparent;
+  flex: 1;
+  min-width: 0;
 }
 .field .inline-where input:first-child {
   flex: 1.4;
-  min-width: 0;
-}
-.field .inline-where input:last-child {
-  flex: 1;
-  min-width: 0;
 }
 .field .inline-where .inline-where-conn {
   font-family: 'Fraunces', serif;
@@ -606,31 +601,46 @@ footer.bene .colophon {
   font-size: 18px;
   color: var(--ink-faded);
   flex-shrink: 0;
-  padding-bottom: 4px;
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
 }
 
 /* Money field with $ prefix */
 .field .money-row {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  border-bottom: 1px solid var(--rule);
-  transition: border-color 0.2s ease;
+  align-items: stretch;
+  background: #fdf9ed;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04);
+  transition: all 0.15s ease;
 }
+.field .money-row:hover { border-color: var(--ink-faded); }
 .field .money-row:focus-within {
   border-color: var(--rust);
+  background: #fffcf2;
+  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04), 0 0 0 3px rgba(160, 72, 41, 0.08);
 }
 .field .money-row .dollar {
   font-family: 'Fraunces', serif;
   font-size: 22px;
-  color: var(--ink);
+  color: var(--ink-soft);
   flex-shrink: 0;
-  padding-bottom: 4px;
+  padding: 12px 0 12px 14px;
   font-weight: 500;
 }
 .field .money-row input {
-  border-bottom: none;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 12px 14px 12px 4px;
   flex: 1;
+}
+.field .money-row input:hover, .field .money-row input:focus {
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 /* "Add something else?" disclosure toggle */
@@ -1088,25 +1098,19 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   .tally .stat:last-child { border-bottom: none; }
   /* Form labels stay readable but slightly smaller on mobile */
   .field label { font-size: 20px; }
-  /* On mobile, the two place/city inputs stack but each gets its own underline */
+  /* On mobile, the two place/city inputs stack vertically with the "in" connector between */
   .field .inline-where {
-    flex-wrap: wrap;
-    gap: 0;
-    border-bottom: none;
+    flex-direction: column;
+    gap: 6px;
   }
   .field .inline-where input:first-child,
   .field .inline-where input:last-child {
-    flex: 1 1 100%;
-    border-bottom: 1px solid var(--rule);
-    transition: border-color 0.2s ease;
+    flex: 1 1 auto;
   }
-  .field .inline-where input:focus { border-color: var(--rust); }
   .field .inline-where .inline-where-conn {
-    flex: 1 1 100%;
+    padding: 2px 0;
     font-size: 14px;
     color: var(--ink-faded);
-    padding: 6px 0 0;
-    text-align: left;
   }
 }
 
