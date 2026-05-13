@@ -7,14 +7,14 @@ interface MapStop {
 }
 
 // Color tokens — kept in sync with globals.css
-const MAP_BG = '#1e4a33';          // var(--bg-darker)
-const MAP_GRID = '#2d6446';         // var(--bg-warm)
-const MAP_PATH = '#d97042';         // var(--rust)
-const MAP_DOT_STOP = '#8fae7f';     // var(--moss)
-const MAP_DOT_LAST = '#d4a13c';     // var(--gold) — current location
-const MAP_DOT_STARTER = '#d4a13c';  // var(--gold)
-const MAP_DOT_ENDED = '#d97042';    // var(--rust)
-const LABEL_COLOR = '#d9cdb0';      // var(--ink-soft)
+const MAP_BG = '#0f2a1c';           // var(--bg-darker)
+const MAP_GRID = '#224d38';         // var(--bg-warm)
+const MAP_PATH = '#c9a04a';         // var(--gold) — primary travel line
+const MAP_DOT_STOP = '#9bb88a';     // var(--moss) — past stops
+const MAP_DOT_LAST = '#e0b755';     // var(--gold-bright) — current location
+const MAP_DOT_STARTER = '#c9a04a';  // var(--gold) — origin
+const MAP_DOT_ENDED = '#b85432';    // var(--rust) — chain ended
+const LABEL_COLOR = '#cdc1a1';      // var(--ink-soft)
 
 export function JourneyMap({ stops }: { stops: MapStop[] }) {
   const W = 720, H = 320;
@@ -29,7 +29,7 @@ export function JourneyMap({ stops }: { stops: MapStop[] }) {
           <rect width={W} height={H} fill={MAP_BG} />
           <text x={W / 2} y={H / 2}
             fontFamily="Caveat, cursive" fontSize="22"
-            fill="#9aa496" textAnchor="middle">
+            fill="#95a08f" textAnchor="middle">
             the path is unmapped
           </text>
         </svg>
@@ -57,10 +57,10 @@ export function JourneyMap({ stops }: { stops: MapStop[] }) {
   const grid: React.JSX.Element[] = [];
   const gridSize = 24;
   for (let i = 0; i <= H / gridSize; i++) {
-    grid.push(<line key={`gh${i}`} x1={0} y1={i * gridSize} x2={W} y2={i * gridSize} stroke={MAP_GRID} strokeWidth={0.5} opacity={0.5} />);
+    grid.push(<line key={`gh${i}`} x1={0} y1={i * gridSize} x2={W} y2={i * gridSize} stroke={MAP_GRID} strokeWidth={0.5} opacity={0.45} />);
   }
   for (let i = 0; i <= W / gridSize; i++) {
-    grid.push(<line key={`gv${i}`} x1={i * gridSize} y1={0} x2={i * gridSize} y2={H} stroke={MAP_GRID} strokeWidth={0.5} opacity={0.5} />);
+    grid.push(<line key={`gv${i}`} x1={i * gridSize} y1={0} x2={i * gridSize} y2={H} stroke={MAP_GRID} strokeWidth={0.5} opacity={0.45} />);
   }
 
   const projected = usable.map(s => project(s.lat, s.lng));
@@ -85,7 +85,7 @@ export function JourneyMap({ stops }: { stops: MapStop[] }) {
             d={pathD}
             stroke={MAP_PATH} strokeWidth={1.8}
             fill="none" strokeDasharray="5,6"
-            strokeLinecap="round" opacity={0.9}
+            strokeLinecap="round" opacity={0.85}
           />
         )}
         {projected.map((p, i) => {

@@ -1,39 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Caveat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* deep forest base */
-  --bg: #27583e;
-  --bg-darker: #1e4a33;
-  --bg-darkest: #163827;
-  --bg-warm: #2d6446;
+  /* deep cathedral green — much darker than before */
+  --bg: #163826;
+  --bg-elev: #1d4530;       /* slightly raised surface */
+  --bg-darker: #0f2a1c;     /* deeper shadow tone */
+  --bg-warm: #224d38;       /* warmer panel */
 
-  /* text */
-  --ink: #f1e8d3;            /* warm cream — the new body text */
-  --ink-soft: #d9cdb0;        /* secondary text */
-  --ink-faded: #9aa496;       /* tertiary / hint text — green-tinted */
-  --ink-dim: #7a8779;         /* very quiet */
+  /* text — warm cream stays the body */
+  --ink: #f0e6cb;
+  --ink-soft: #cdc1a1;
+  --ink-faded: #95a08f;
+  --ink-dim: #6b7868;
 
-  /* accents */
-  --rust: #d97042;            /* warm terracotta — primary accent */
-  --rust-deep: #b8542c;       /* hover / pressed state */
-  --rust-soft: rgba(217, 112, 66, 0.16);
+  /* accents — gold primary, rust reserved for end-of-chain only */
+  --gold: #c9a04a;          /* warm brass — primary accent */
+  --gold-bright: #e0b755;   /* hover / emphasis */
+  --gold-deep: #a48235;     /* deeper gold for borders */
+  --gold-pale: rgba(201, 160, 74, 0.14);
 
-  --gold: #d4a13c;            /* secondary accent — highlights, dots */
-  --gold-pale: rgba(212, 161, 60, 0.12);
+  --rust: #b85432;          /* reserved for "ended" status only */
+  --rust-soft: rgba(184, 84, 50, 0.14);
 
-  --moss: #8fae7f;            /* quiet sage for "who" / names */
-  --moss-deep: #6f9061;
+  --moss: #9bb88a;          /* sage for names */
+  --moss-deep: #7a9670;
 
   /* lines */
-  --rule: #3a6d52;            /* subtle border in green family */
-  --rule-strong: #4a7d62;     /* stronger border */
-  --rule-soft: rgba(241, 232, 211, 0.12);
+  --rule: #2d5340;          /* subtle in-green border */
+  --rule-strong: #3d6850;
+  --rule-cream: rgba(240, 230, 203, 0.18);
 
-  /* input surface */
-  --input-bg: #1e4a33;
-  --input-bg-focus: #234f37;
-  --input-border: #3a6d52;
-  --input-border-focus: var(--rust);
+  /* input surface — cleaner, no shadow */
+  --input-bg: #0f2a1c;
+  --input-bg-focus: #122f20;
+  --input-border: #3d6850;
+  --input-border-focus: var(--gold);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,9 +52,8 @@ html, body {
 body {
   background-color: var(--bg);
   background-image:
-    radial-gradient(circle at 18% 12%, rgba(212,161,60,0.06) 0%, transparent 42%),
-    radial-gradient(circle at 82% 78%, rgba(217,112,66,0.05) 0%, transparent 40%),
-    radial-gradient(ellipse at 50% 0%, rgba(143,174,127,0.08) 0%, transparent 50%);
+    radial-gradient(circle at 50% 0%, rgba(201,160,74,0.05) 0%, transparent 45%),
+    radial-gradient(circle at 15% 90%, rgba(155,184,138,0.04) 0%, transparent 40%);
   min-height: 100vh;
 }
 
@@ -63,9 +63,9 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.35;
+  opacity: 0.25;
   mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.94 0 0 0 0 0.91 0 0 0 0 0.83 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.94 0 0 0 0 0.90 0 0 0 0 0.80 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
 a { color: inherit; }
@@ -89,7 +89,7 @@ header.mast {
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.2em;
-  color: var(--rust);
+  color: var(--gold);
   margin-bottom: 18px;
   text-transform: uppercase;
   display: flex;
@@ -101,7 +101,7 @@ header.mast {
   content: "";
   flex: 0 1 60px;
   height: 1px;
-  background: var(--rust);
+  background: var(--gold);
   opacity: 0.4;
 }
 .mast h1 {
@@ -116,13 +116,13 @@ header.mast {
 .mast h1 a { text-decoration: none; }
 .mast h1 em {
   font-style: italic;
-  color: var(--rust);
+  color: var(--gold);
   font-weight: 500;
 }
 .mast .tagline {
   font-family: 'Caveat', cursive;
   font-size: 22px;
-  color: var(--rust);
+  color: var(--gold);
   margin-top: 10px;
   font-weight: 500;
   display: inline-block;
@@ -130,7 +130,7 @@ header.mast {
 .mast .ornament {
   text-align: center;
   margin: 20px 0 0;
-  color: var(--rust);
+  color: var(--gold);
   opacity: 0.5;
   font-size: 14px;
   letter-spacing: 0.6em;
@@ -183,13 +183,13 @@ section.activity {
   display: inline-block;
   width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--rust);
+  background: var(--gold);
   animation: pulse 2s ease-out infinite;
 }
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(217,112,66,0.6); }
-  70% { box-shadow: 0 0 0 8px rgba(217,112,66,0); }
-  100% { box-shadow: 0 0 0 0 rgba(217,112,66,0); }
+  0% { box-shadow: 0 0 0 0 rgba(201,160,74,0.55); }
+  70% { box-shadow: 0 0 0 8px rgba(201,160,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(201,160,74,0); }
 }
 
 .feed {
@@ -198,13 +198,18 @@ section.activity {
 
 .entry {
   display: flex;
-  padding: 18px 0;
+  padding: 18px 0 18px 0;
   border-bottom: 1px solid var(--rule);
   align-items: baseline;
   position: relative;
 }
-.entry.first-row { background: var(--gold-pale); }
-.entry.first-row .entry-num { color: var(--rust-deep); }
+.entry.first-row {
+  background: var(--gold-pale);
+  margin: 0 -16px;
+  padding: 18px 16px;
+  border-left: 2px solid var(--gold);
+}
+.entry.first-row .entry-num { color: var(--gold-bright); }
 
 .entry-num {
   width: 60px;
@@ -212,7 +217,7 @@ section.activity {
   font-family: 'Fraunces', serif;
   font-weight: 500;
   font-size: 26px;
-  color: var(--rust);
+  color: var(--gold);
   line-height: 1;
   font-variation-settings: "opsz" 144;
   padding-left: 4px;
@@ -230,19 +235,19 @@ section.activity {
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--rust);
+  color: var(--gold);
   display: inline-block;
   background: var(--bg-warm);
   padding: 2px 8px;
   margin-right: 10px;
-  border: 1px solid var(--rust);
+  border: 1px solid var(--gold);
   border-radius: 2px;
   font-weight: 500;
   white-space: nowrap;
   text-decoration: none;
 }
 .entry-body .chain-tag:hover {
-  background: var(--rust);
+  background: var(--gold);
   color: var(--bg);
 }
 .entry-body .chain-tag.dormant {
@@ -260,7 +265,7 @@ section.activity {
   border-bottom: 1px dashed var(--ink-soft);
 }
 .entry-body .amount {
-  color: var(--rust);
+  color: var(--gold);
   font-weight: 600;
   font-variation-settings: "opsz" 14;
 }
@@ -306,7 +311,7 @@ section.activity {
 .entry-meta a, .entry-meta button {
   display: block;
   margin-top: 6px;
-  color: var(--rust);
+  color: var(--gold);
   text-decoration: none;
   font-family: 'Fraunces', serif;
   font-style: italic;
@@ -316,14 +321,14 @@ section.activity {
   border: none;
   background: none;
   padding: 0;
-  border-bottom: 1px solid var(--rust);
+  border-bottom: 1px solid var(--gold);
   cursor: pointer;
   text-align: right;
   width: 100%;
 }
 .entry-meta a:hover, .entry-meta button:hover {
-  color: var(--rust-deep);
-  border-color: var(--rust-deep);
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
 }
 
 .empty-state {
@@ -344,7 +349,7 @@ section.activity {
 .prose .note-head {
   font-family: 'Caveat', cursive;
   font-size: 24px;
-  color: var(--rust);
+  color: var(--gold);
   display: inline-block;
   margin-bottom: 14px;
   font-weight: 500;
@@ -385,7 +390,7 @@ section.activity {
 .step .num {
   font-family: 'Caveat', cursive;
   font-size: 30px;
-  color: var(--rust);
+  color: var(--gold);
   line-height: 1;
   font-weight: 500;
 }
@@ -406,7 +411,7 @@ section.activity {
 .start-card .scrawl {
   font-family: 'Caveat', cursive;
   font-size: 22px;
-  color: var(--rust);
+  color: var(--gold);
   margin-bottom: 6px;
   font-weight: 500;
 }
@@ -437,18 +442,18 @@ section.activity {
   font-family: 'Fraunces', serif;
   font-style: italic;
   font-size: 22px;
-  color: var(--rust);
+  color: var(--gold);
   text-decoration: none;
   border: none;
   background: none;
   cursor: pointer;
-  border-bottom: 2px solid var(--rust);
+  border-bottom: 2px solid var(--gold);
   padding: 0 0 1px 0;
   transition: all 0.2s ease;
 }
 .start-card a.primary:hover, .start-card button.primary:hover {
-  color: var(--rust-deep);
-  border-color: var(--rust-deep);
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
 }
 
 /* ——— Footer ——— */
@@ -461,7 +466,7 @@ footer.bene {
 footer.bene .stamp {
   width: 56px;
   height: 56px;
-  border: 2px solid var(--rust);
+  border: 2px solid var(--gold);
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -473,7 +478,7 @@ footer.bene .stamp-inner {
   font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   text-align: center;
-  color: var(--rust);
+  color: var(--gold);
   letter-spacing: 0.06em;
   line-height: 1.1;
   text-transform: uppercase;
@@ -513,7 +518,7 @@ footer.bene .colophon {
   margin-bottom: 36px;
   text-transform: uppercase;
 }
-.form-page .back:hover { color: var(--rust); }
+.form-page .back:hover { color: var(--gold); }
 .form-page h1 {
   font-family: 'Fraunces', serif;
   font-weight: 600;
@@ -523,11 +528,11 @@ footer.bene .colophon {
   letter-spacing: -0.015em;
   font-variation-settings: "opsz" 144;
 }
-.form-page h1 em { font-style: italic; color: var(--rust); font-weight: 500; }
+.form-page h1 em { font-style: italic; color: var(--gold); font-weight: 500; }
 .form-page .lede {
   font-family: 'Caveat', cursive;
   font-size: 22px;
-  color: var(--rust);
+  color: var(--gold);
   display: inline-block;
   margin-bottom: 28px;
   font-weight: 500;
@@ -576,27 +581,24 @@ footer.bene .colophon {
   font-size: 19px;
   color: var(--ink);
   background: var(--input-bg);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
+  border: 1px solid var(--input-border);
+  border-radius: 2px;
   padding: 12px 14px;
   outline: none;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
   font-variation-settings: "opsz" 14;
   appearance: none;
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 .field input:hover, .field textarea:hover, .field select:hover {
-  border-color: var(--ink-faded);
+  border-color: var(--rule-strong);
 }
 .field input:focus, .field textarea:focus, .field select:focus {
-  border-color: var(--rust);
+  border-color: var(--gold);
   background: var(--input-bg-focus);
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(217, 112, 66, 0.18);
 }
 .field input::placeholder, .field textarea::placeholder {
-  color: var(--ink-faded);
-  opacity: 0.65;
+  color: var(--ink-dim);
   font-style: italic;
 }
 
@@ -629,16 +631,14 @@ footer.bene .colophon {
   display: flex;
   align-items: stretch;
   background: var(--input-bg);
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2);
-  transition: all 0.15s ease;
+  border: 1px solid var(--input-border);
+  border-radius: 2px;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
-.field .money-row:hover { border-color: var(--ink-faded); }
+.field .money-row:hover { border-color: var(--rule-strong); }
 .field .money-row:focus-within {
-  border-color: var(--rust);
+  border-color: var(--gold);
   background: var(--input-bg-focus);
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(217, 112, 66, 0.18);
 }
 .field .money-row .dollar {
   font-family: 'Fraunces', serif;
@@ -667,18 +667,18 @@ footer.bene .colophon {
   font-family: 'Fraunces', serif;
   font-style: italic;
   font-size: 16px;
-  color: var(--rust);
+  color: var(--gold);
   background: none;
   border: none;
   cursor: pointer;
   text-align: left;
   padding: 0;
-  border-bottom: 1px dashed var(--rust);
+  border-bottom: 1px dashed var(--gold);
   transition: color 0.2s ease;
 }
 .add-toggle:hover {
-  color: var(--rust-deep);
-  border-color: var(--rust-deep);
+  color: var(--gold-bright);
+  border-color: var(--gold-bright);
 }
 
 /* The "I kept it" toggle — looks like a real action, not a statement */
@@ -713,19 +713,19 @@ footer.bene .colophon {
   transition: all 0.15s ease;
 }
 .kept-toggle:hover {
-  border-color: var(--rust);
+  border-color: var(--gold);
 }
 .kept-toggle:hover::before {
-  border-color: var(--rust);
+  border-color: var(--gold);
 }
 .kept-toggle.active {
-  background: rgba(217,112,66,0.15);
-  border-color: var(--rust);
+  background: var(--bg-warm);
+  border-color: var(--gold);
   color: var(--ink);
 }
 .kept-toggle.active::before {
-  background: var(--rust);
-  border-color: var(--rust);
+  background: var(--gold);
+  border-color: var(--gold);
 }
 .kept-toggle.active::after {
   content: "";
@@ -735,7 +735,7 @@ footer.bene .colophon {
   transform: translateY(-65%) rotate(45deg);
   width: 6px;
   height: 11px;
-  border: solid var(--ink);
+  border: solid var(--bg);
   border-width: 0 2px 2px 0;
 }
 .kept-toggle .kept-label {
@@ -758,26 +758,26 @@ button.submit, a.submit {
   font-family: 'Fraunces', serif;
   font-style: italic;
   font-size: 22px;
-  color: var(--rust);
+  color: var(--gold);
   background: none;
   border: none;
-  border-bottom: 2px solid var(--rust);
+  border-bottom: 2px solid var(--gold);
   cursor: pointer;
   padding: 0 0 1px 0;
   transition: all 0.2s ease;
   font-variation-settings: "opsz" 144;
   text-decoration: none;
 }
-button.submit:hover:not(:disabled), a.submit:hover { color: var(--rust-deep); border-color: var(--rust-deep); }
+button.submit:hover:not(:disabled), a.submit:hover { color: var(--gold-bright); border-color: var(--gold-bright); }
 button.submit:disabled { opacity: 0.5; cursor: wait; }
 .error-msg {
   margin-top: 16px;
   padding: 14px 18px;
-  background: rgba(217,112,66,0.15);
-  border-left: 3px solid var(--rust);
+  background: var(--gold-pale);
+  border-left: 3px solid var(--gold);
   font-family: 'Caveat', cursive;
   font-size: 20px;
-  color: var(--rust);
+  color: var(--gold);
   line-height: 1.4;
   font-weight: 500;
 }
@@ -786,7 +786,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
 .receipt { margin-top: 24px; }
 .receipt .card-mock {
   background: var(--bg-warm);
-  border: 1px dashed var(--rust);
+  border: 1px dashed var(--gold);
   padding: 32px 28px;
   margin: 32px 0;
   text-align: center;
@@ -804,7 +804,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   font-family: 'Fraunces', serif;
   font-weight: 600;
   font-size: 32px;
-  color: var(--rust);
+  color: var(--gold);
   margin: 4px 0 22px;
   line-height: 1;
   font-variation-settings: "opsz" 144;
@@ -875,7 +875,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.2em;
-  color: var(--rust);
+  color: var(--gold);
   text-transform: uppercase;
   margin-bottom: 14px;
   display: flex;
@@ -888,7 +888,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   content: "";
   flex: 0 1 50px;
   height: 1px;
-  background: var(--rust);
+  background: var(--gold);
   opacity: 0.4;
 }
 .chain-page .crest h1 {
@@ -901,7 +901,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   line-height: 1;
 }
 .chain-page .crest h1 .batch {
-  color: var(--rust);
+  color: var(--gold);
   font-style: italic;
   font-weight: 500;
 }
@@ -912,7 +912,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   color: var(--ink-soft);
   font-weight: 500;
 }
-.chain-page .crest .status.ended { color: var(--rust); }
+.chain-page .crest .status.ended { color: var(--gold); }
 
 .tally {
   display: flex;
@@ -936,7 +936,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   font-family: 'Fraunces', serif;
   font-weight: 600;
   font-size: 30px;
-  color: var(--rust);
+  color: var(--gold);
   line-height: 1;
   font-variation-settings: "opsz" 144;
   display: block;
@@ -1038,7 +1038,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   color: var(--ink-soft);
 }
 .timeline .added .amount {
-  color: var(--rust);
+  color: var(--gold);
   font-weight: 600;
 }
 .timeline .note {
@@ -1076,7 +1076,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
 .log-prompt .scrawl {
   font-family: 'Caveat', cursive;
   font-size: 22px;
-  color: var(--rust);
+  color: var(--gold);
   margin-bottom: 6px;
   font-weight: 500;
 }
