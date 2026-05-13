@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { generateSecretCode, MUSHROOM_BATCHES } from '@/lib/wordlists';
 import { geocode } from '@/lib/geocode';
+import { qrSvg } from '@/lib/qr';
 
 export async function POST(req: NextRequest) {
   let body: {
     batch?: string;
     starter_name?: string | null;
+    starter_place?: string | null;
     starter_city?: string | null;
     starter_note?: string | null;
     admin_token?: string;
@@ -63,13 +65,14 @@ export async function POST(req: NextRequest) {
 
   // Insert chain
   const inserted = (await sql`
-    INSERT INTO chains (batch, number, secret_code, starter_name, starter_note, starter_city, starter_lat, starter_lng)
+    INSERT INTO chains (batch, number, secret_code, starter_name, starter_note, starter_place, starter_city, starter_lat, starter_lng)
     VALUES (
       ${batch},
       ${nextNumber},
       ${secret_code},
       ${body.starter_name?.trim() || null},
       ${body.starter_note?.trim() || null},
+      ${body.starter_place?.trim() || null},
       ${starter_city},
       ${starter_lat},
       ${starter_lng}
@@ -80,11 +83,13 @@ export async function POST(req: NextRequest) {
   const chain = inserted[0];
   const origin = req.headers.get('origin') || `https://${req.headers.get('host')}`;
   const url = `${origin}/c/${encodeURIComponent(chain.batch)}/${chain.number}`;
+  const qr_svg = await qrSvg(url);
 
   return NextResponse.json({
     batch: chain.batch,
     number: chain.number,
     secret_code: chain.secret_code,
     url,
+    qr_svg,
   });
 }

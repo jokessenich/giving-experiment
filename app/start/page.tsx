@@ -9,9 +9,8 @@ export default function StartPage() {
   return (
     <div className="wrap form-page">
       <Masthead subtle />
-      <a href="/" className="back">← back</a>
 
-      <h1>Start a chain.</h1>
+      <h1>Start a <em>chain</em>.</h1>
       <div className="lede">— a small thing, sent out into the world.</div>
 
       <p className="intro">

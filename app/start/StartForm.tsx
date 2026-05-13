@@ -7,6 +7,7 @@ interface CreatedChain {
   number: number;
   secret_code: string;
   url: string;
+  qr_svg: string;
 }
 
 export function StartForm({ batches }: { batches: string[] }) {
@@ -17,6 +18,7 @@ export function StartForm({ batches }: { batches: string[] }) {
   // Sensible default: pick a random batch as the suggested name
   const [batch, setBatch] = useState(batches[Math.floor(Math.random() * batches.length)]);
   const [starterName, setStarterName] = useState('');
+  const [starterPlace, setStarterPlace] = useState('');
   const [starterCity, setStarterCity] = useState('');
   const [starterNote, setStarterNote] = useState('');
   const [adminToken, setAdminToken] = useState('');
@@ -33,6 +35,7 @@ export function StartForm({ batches }: { batches: string[] }) {
         body: JSON.stringify({
           batch,
           starter_name: starterName.trim() || null,
+          starter_place: starterPlace.trim() || null,
           starter_city: starterCity.trim() || null,
           starter_note: starterNote.trim() || null,
           admin_token: adminToken,
@@ -66,18 +69,6 @@ export function StartForm({ batches }: { batches: string[] }) {
           id="batch"
           value={batch}
           onChange={(e) => setBatch(e.target.value)}
-          style={{
-            width: '100%',
-            fontFamily: 'Fraunces, serif',
-            fontSize: 19,
-            color: 'var(--ink)',
-            background: 'transparent',
-            border: 'none',
-            borderBottom: '1px solid var(--rule)',
-            padding: '6px 0 8px',
-            outline: 'none',
-            appearance: 'none',
-          }}
         >
           {batches.map((b) => (
             <option key={b} value={b}>{b}</option>
@@ -100,16 +91,27 @@ export function StartForm({ batches }: { batches: string[] }) {
       </div>
 
       <div className="field">
-        <label htmlFor="city">
-          where you&apos;re starting it <span className="opt">— optional</span>
+        <label htmlFor="place">
+          where are you putting it? <span className="opt">— optional</span>
         </label>
-        <input
-          id="city"
-          type="text"
-          value={starterCity}
-          onChange={(e) => setStarterCity(e.target.value)}
-          placeholder="e.g. Ann Arbor, MI"
-        />
+        <div className="inline-where">
+          <input
+            id="place"
+            type="text"
+            value={starterPlace}
+            onChange={(e) => setStarterPlace(e.target.value)}
+            placeholder="in the mail"
+            autoComplete="off"
+          />
+          <span className="inline-where-conn">in</span>
+          <input
+            id="city"
+            type="text"
+            value={starterCity}
+            onChange={(e) => setStarterCity(e.target.value)}
+            placeholder="Ann Arbor, MI"
+          />
+        </div>
         <div className="hint">just so the journey has a starting point on the map.</div>
       </div>
 
@@ -153,14 +155,14 @@ function Receipt({ chain }: { chain: CreatedChain }) {
   return (
     <div className="receipt">
       <h1 style={{ marginTop: 12 }}>your chain is ready.</h1>
-      <div className="lede" style={{ marginBottom: 12 }}>— mushroom #{chain.number}, with love.</div>
+      <div className="lede" style={{ marginBottom: 12 }}>— {chain.batch} #{chain.number}, with love.</div>
 
       <p className="intro">
         Print this card (or write it out by hand), tuck it inside your package, and send it on its way.
-        Whoever finds it can use the code to log where it landed.
+        Whoever finds it can scan the code or visit the link to log where it landed.
       </p>
 
-      <div className="card-mock">
+      <div className="card-mock printable-card">
         <div className="card-id">chain</div>
         <div className="card-name">{chain.batch} #{chain.number}</div>
 
@@ -172,18 +174,23 @@ function Receipt({ chain }: { chain: CreatedChain }) {
           If you don&apos;t, add something and pass it on.
         </div>
 
+        <div
+          className="qr-wrap"
+          dangerouslySetInnerHTML={{ __html: chain.qr_svg }}
+        />
+
         <div className="card-code-label">your code</div>
         <div className="card-code">{chain.secret_code}</div>
 
-        <div className="card-url">log it at {chain.url}</div>
+        <div className="card-url">{chain.url}</div>
       </div>
 
-      <div className="instructions">
+      <div className="instructions no-print">
         <p>print this page (cmd-p), or copy the details by hand onto a card.</p>
         <p>save the code somewhere safe — you can&apos;t recover it.</p>
       </div>
 
-      <div className="submit-row">
+      <div className="submit-row no-print">
         <a href="/" className="submit" style={{ textDecoration: 'none' }}>← home</a>
         <a href="/start" style={{
           fontFamily: 'Fraunces, serif',

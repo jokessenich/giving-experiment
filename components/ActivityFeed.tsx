@@ -1,6 +1,4 @@
-'use client';
-
-import { useState } from 'react';
+import Link from 'next/link';
 import { relativeTime } from '@/lib/format';
 
 export interface FeedStop {
@@ -9,37 +7,36 @@ export interface FeedStop {
   batch: string;
   number: number;
   name: string | null;
+  place: string | null;
   city: string;
   lat: number | null;
   lng: number | null;
   note: string | null;
   added_what: string | null;
+  amount_added: number | string | null;
   ended_chain: boolean;
+  kept_for: string | null;
   created_at: string;
   is_dormant?: boolean;
 }
 
-export interface FeedChainStops {
-  id: number;
-  batch: string;
-  number: number;
-  stops: { city: string; lat: number | null; lng: number | null; created_at: string; ended_chain: boolean }[];
-}
-
 export function ActivityFeed({
   entries,
-  chainsForMap,
+  totalStops,
 }: {
   entries: FeedStop[];
-  chainsForMap: Record<number, FeedChainStops>;
+  totalStops: number;
 }) {
-  const [openChainId, setOpenChainId] = useState<number | null>(null);
-
   if (entries.length === 0) {
     return (
       <section className="activity">
-        <div className="activity-head">
-          <h2>what&apos;s moving</h2>
+        <div className="ledger-head">
+          <span className="col-1">№</span>
+          <span className="col-2 with-pulse">
+            <span className="live-dot"></span>
+            stops along the way
+          </span>
+          <span className="col-3">when</span>
         </div>
         <div className="empty-state">
           nothing yet — the first chains are still in the mail.<br />
@@ -50,212 +47,138 @@ export function ActivityFeed({
   }
 
   return (
-    <>
-      <section className="activity">
-        <div className="activity-head">
-          <h2>what&apos;s moving</h2>
-        </div>
+    <section className="activity">
+      <div className="ledger-head">
+        <span className="col-1">№</span>
+        <span className="col-2 with-pulse">
+          <span className="live-dot"></span>
+          stops along the way
+        </span>
+        <span className="col-3">when</span>
+      </div>
 
-        <ul className="feed">
-          {entries.map((e, i) => (
+      <ul className="feed">
+        {entries.map((e, i) => {
+          // Number from total descending: most recent stop = totalStops, etc.
+          const num = totalStops - i;
+          return (
             <li
-              key={e.id}
-              className={`entry${e.is_dormant ? ' dormant' : ''}${i === 0 && !e.is_dormant ? ' taped' : ''}`}
+              key={e.id + (e.is_dormant ? '-d' : '')}
+              className={`entry${i === 0 ? ' first-row' : ''}`}
             >
-              <div className="chain">
-                chain<b>{e.batch} #{e.number}</b>
-              </div>
-              <div className="body">
+              <div className="entry-num">{String(num).padStart(2, '0')}</div>
+              <div className={`entry-body${e.is_dormant ? ' dormant' : ''}`}>
+                <Link
+                  href={`/c/${encodeURIComponent(e.batch)}/${e.number}`}
+                  className={`chain-tag${e.is_dormant ? ' dormant' : ''}`}
+                >
+                  {e.batch} #{e.number}
+                </Link>
                 {renderBody(e)}
-                {e.note && <span className="note">&ldquo;{e.note}&rdquo;</span>}
               </div>
-              <div className="meta">
+              <div className="entry-meta">
                 {relativeTime(e.created_at)}
-                {chainsForMap[e.chain_id] && (
-                  <button onClick={() => setOpenChainId(e.chain_id)}>see the journey</button>
-                )}
+                <Link href={`/c/${encodeURIComponent(e.batch)}/${e.number}`}>
+                  journey
+                </Link>
               </div>
             </li>
-          ))}
-        </ul>
-      </section>
-
-      {openChainId !== null && chainsForMap[openChainId] && (
-        <JourneyModal
-          chain={chainsForMap[openChainId]}
-          onClose={() => setOpenChainId(null)}
-        />
-      )}
-    </>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
 function renderBody(e: FeedStop) {
   if (e.is_dormant) {
-    return (
-      <>went quiet near <span className="where">{e.city}</span>. nobody&apos;s heard from it since.</>
-    );
+    return <>went quiet near <span className="where">{e.city}</span>.</>;
   }
 
   const who = e.name?.trim() ? <span className="who">{e.name}</span> : <span>Anonymous</span>;
+  const placeIn = renderPlaceIn(e.place, e.city);
 
   if (e.ended_chain) {
+    // "Someone found it in their mailbox in Tucson, AZ and kept it."
+    // Or fallback: "Someone took it home in Tucson, AZ."
+    const opening = e.place?.trim()
+      ? <>Someone found it {placeIn} and kept it.</>
+      : <>Someone took it home in <span className="where">{e.city}</span>.</>;
     return (
       <>
-        Someone took it home in <span className="where">{e.city}</span>.{' '}
-        <span className="ended">chain ended</span>
+        {opening}{' '}
+        <span className="ended">ended</span>
+        {e.kept_for?.trim() && <span className="note">&ldquo;{e.kept_for}&rdquo;</span>}
+        {e.note?.trim() && <span className="note">&ldquo;{e.note}&rdquo;</span>}
       </>
     );
   }
 
-  if (e.added_what?.trim()) {
+  const amount = parseAmount(e.amount_added);
+  const what = e.added_what?.trim();
+  const addedPhrase = buildAddedPhrase(amount, what);
+
+  // Sentence builder:
+  // - Place + added: "Maren found it in her mailbox in Madison, WI and added $20 before sending it on."
+  // - Place, no add: "Maren found it on a park bench in Brooklyn, NY and sent it on."
+  // - No place, added: "Maren got it in Madison, WI and added $20 before sending it on."
+  // - Neither: "Maren in Madison, WI kept it moving."
+  if (e.place?.trim() && addedPhrase) {
     return (
       <>
-        {who} got it in <span className="where">{e.city}</span> and added {e.added_what} before sending it on.
+        {who} found it {placeIn} and added {addedPhrase} before sending it on.
+        {e.note?.trim() && <span className="note">&ldquo;{e.note}&rdquo;</span>}
       </>
     );
   }
-
-  return (
-    <>{who} {e.name ? 'sent it on from' : 'in'} <span className="where">{e.city}</span>{e.name ? '.' : ' kept it moving.'}</>
-  );
-}
-
-// ——— Journey modal ———
-
-function JourneyModal({
-  chain,
-  onClose,
-}: {
-  chain: FeedChainStops;
-  onClose: () => void;
-}) {
-  return (
-    <div className="modal-veil" onClick={(ev) => { if (ev.target === ev.currentTarget) onClose(); }}>
-      <div className="modal">
-        <button className="close" onClick={onClose} aria-label="close">×</button>
-        <h3>chain <span className="num">{chain.batch} #{chain.number}</span></h3>
-        <div className="modal-sub">where it&apos;s been</div>
-
-        <div className="map">
-          <JourneySVG stops={chain.stops} />
-        </div>
-
-        <ul className="stops">
-          {chain.stops.map((s, i) => (
-            <li key={i}>
-              <span className="place">
-                <span className={`marker${s.ended_chain ? ' ended' : ''}`}></span>
-                {s.city}
-                {s.ended_chain && <span className="ended-tag">— it found a home here</span>}
-              </span>
-              <span className="when">{relativeTime(s.created_at)}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
-// ——— Sketch-on-graph-paper journey map ———
-// Project lat/lng into the SVG box; bound to a US-ish view but auto-fit to actual stops.
-
-function JourneySVG({ stops }: { stops: FeedChainStops['stops'] }) {
-  const W = 400, H = 280;
-  const usable = stops.filter(s => s.lat !== null && s.lng !== null) as { lat: number; lng: number; ended_chain: boolean; city: string }[];
-
-  if (usable.length === 0) {
+  if (e.place?.trim()) {
     return (
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-        <rect width={W} height={H} fill="#efe6cd" />
-        <text
-          x={W / 2} y={H / 2}
-          fontFamily="Caveat, cursive" fontSize="20"
-          fill="#8a8071" textAnchor="middle"
-        >
-          the path is unmapped
-        </text>
-      </svg>
+      <>
+        {who} found it {placeIn} and sent it on.
+        {e.note?.trim() && <span className="note">&ldquo;{e.note}&rdquo;</span>}
+      </>
     );
   }
-
-  // Bounding box with padding so points aren't on the edge
-  const lats = usable.map(s => s.lat);
-  const lngs = usable.map(s => s.lng);
-  const padPct = 0.2;
-  let minLat = Math.min(...lats), maxLat = Math.max(...lats);
-  let minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
-  // expand if too tight (single point)
-  if (maxLat - minLat < 1) { minLat -= 1; maxLat += 1; }
-  if (maxLng - minLng < 1) { minLng -= 1; maxLng += 1; }
-  const dLat = maxLat - minLat;
-  const dLng = maxLng - minLng;
-  minLat -= dLat * padPct; maxLat += dLat * padPct;
-  minLng -= dLng * padPct; maxLng += dLng * padPct;
-
-  const project = (lat: number, lng: number) => ({
-    x: ((lng - minLng) / (maxLng - minLng)) * W,
-    y: H - ((lat - minLat) / (maxLat - minLat)) * H, // invert: north = up
-  });
-
-  // grid
-  const grid = [];
-  for (let i = 0; i <= 14; i++) {
-    grid.push(<line key={`gh${i}`} x1={0} y1={i * 20} x2={W} y2={i * 20} stroke="#d8cdb3" strokeWidth={0.6} />);
+  if (addedPhrase) {
+    return (
+      <>
+        {who} got it in <span className="where">{e.city}</span> and added {addedPhrase} before sending it on.
+        {e.note?.trim() && <span className="note">&ldquo;{e.note}&rdquo;</span>}
+      </>
+    );
   }
-  for (let i = 0; i <= 20; i++) {
-    grid.push(<line key={`gv${i}`} x1={i * 20} y1={0} x2={i * 20} y2={H} stroke="#d8cdb3" strokeWidth={0.6} />);
-  }
-
-  // wobbly path connecting stops
-  const projected = usable.map(s => project(s.lat, s.lng));
-  let pathD = '';
-  if (projected.length > 1) {
-    pathD = `M ${projected[0].x} ${projected[0].y}`;
-    for (let i = 1; i < projected.length; i++) {
-      const prev = projected[i - 1], cur = projected[i];
-      const mx = (prev.x + cur.x) / 2 + Math.sin(i * 9.7) * 14;
-      const my = (prev.y + cur.y) / 2 - 20 + Math.cos(i * 5.3) * 10;
-      pathD += ` Q ${mx} ${my}, ${cur.x} ${cur.y}`;
-    }
-  }
-
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-      <rect width={W} height={H} fill="#efe6cd" />
-      {grid}
-      {pathD && (
-        <path
-          d={pathD}
-          stroke="#a8632d" strokeWidth={1.6}
-          fill="none" strokeDasharray="4,5"
-          strokeLinecap="round" opacity={0.85}
-        />
-      )}
-      {projected.map((p, i) => {
-        const stop = usable[i];
-        const isLast = i === projected.length - 1;
-        const r = isLast ? 6.5 : 4.5;
-        const fill = stop.ended_chain ? '#a8632d' : (isLast ? '#4f614a' : '#6b7d5e');
-        const labelAlign: 'start' | 'end' = p.x > W * 0.7 ? 'end' : 'start';
-        const dx = p.x > W * 0.7 ? -8 : 8;
-        return (
-          <g key={i}>
-            {isLast && !stop.ended_chain && (
-              <circle cx={p.x} cy={p.y} r={11} fill="none" stroke="#4f614a" strokeWidth={1} opacity={0.4} />
-            )}
-            <circle cx={p.x} cy={p.y} r={r} fill={fill} />
-            <text
-              x={p.x + dx} y={p.y - 10}
-              fontFamily="Caveat, cursive" fontSize={14}
-              fill="#5a5246" textAnchor={labelAlign}
-            >
-              {stop.city.split(',')[0]}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
+    <>
+      {who} {e.name ? 'sent it on from' : 'in'} <span className="where">{e.city}</span>{e.name ? '.' : ' kept it moving.'}
+      {e.note?.trim() && <span className="note">&ldquo;{e.note}&rdquo;</span>}
+    </>
   );
+}
+
+function renderPlaceIn(place: string | null | undefined, city: string): React.ReactNode {
+  // Render: "<place> in <city>" — both inline, with city as the .where anchor.
+  // place is rendered verbatim (option 2 — trust the user).
+  return (
+    <>
+      {place} in <span className="where">{city}</span>
+    </>
+  );
+}
+
+function parseAmount(v: number | string | null | undefined): number | null {
+  if (v === null || v === undefined) return null;
+  const n = typeof v === 'number' ? v : parseFloat(v);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n;
+}
+
+function buildAddedPhrase(amount: number | null, what: string | null | undefined): React.ReactNode {
+  const formatAmount = (n: number) => {
+    if (Number.isInteger(n)) return `$${n}`;
+    return `$${n.toFixed(2)}`;
+  };
+  if (amount && what) return <><span className="amount">{formatAmount(amount)}</span> and {what}</>;
+  if (amount) return <span className="amount">{formatAmount(amount)}</span>;
+  if (what) return what;
+  return null;
 }

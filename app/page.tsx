@@ -2,18 +2,16 @@ import Link from 'next/link';
 import { sql } from '@/lib/db';
 import { Masthead } from '@/components/Masthead';
 import { Footer } from '@/components/Footer';
-import { ActivityFeed, FeedStop, FeedChainStops } from '@/components/ActivityFeed';
+import { ActivityFeed, FeedStop } from '@/components/ActivityFeed';
 
-// Don't cache — chains move
 export const revalidate = 0;
 export const dynamic = 'force-dynamic';
 
-async function getFeed(): Promise<{ entries: FeedStop[]; chainsForMap: Record<number, FeedChainStops> }> {
-  // Recent stops, joined with their chain
+async function getFeed(): Promise<{ entries: FeedStop[]; totalStops: number; activeChains: number }> {
   const recentStops = (await sql`
     SELECT
-      s.id, s.chain_id, s.name, s.city, s.lat, s.lng, s.note,
-      s.added_what, s.ended_chain, s.created_at,
+      s.id, s.chain_id, s.name, s.place, s.city, s.lat, s.lng, s.note,
+      s.added_what, s.amount_added, s.ended_chain, s.kept_for, s.created_at,
       c.batch, c.number
     FROM stops s
     JOIN chains c ON c.id = s.chain_id
@@ -21,7 +19,6 @@ async function getFeed(): Promise<{ entries: FeedStop[]; chainsForMap: Record<nu
     LIMIT 12
   `) as unknown as FeedStop[];
 
-  // Find chains active >60 days ago with no recent stops — show them as dormant
   const dormant = (await sql`
     SELECT
       c.id AS chain_id, c.batch, c.number,
@@ -40,121 +37,63 @@ async function getFeed(): Promise<{ entries: FeedStop[]; chainsForMap: Record<nu
     LIMIT 4
   `) as unknown as { chain_id: number; batch: string; number: number; city: string | null; chain_created: string; last_stop_at: string | null }[];
 
-  // For each dormant chain, show last known city
   const dormantEntries: FeedStop[] = await Promise.all(
     dormant.map(async (d) => {
       const lastStop = (await sql`
-        SELECT id, chain_id, name, city, lat, lng, note, added_what, ended_chain, created_at
+        SELECT id, city, lat, lng, created_at
         FROM stops
         WHERE chain_id = ${d.chain_id}
         ORDER BY created_at DESC
         LIMIT 1
-      `) as unknown as Array<Omit<FeedStop, 'batch' | 'number'>>;
+      `) as unknown as Array<{ id: number; city: string; lat: number | null; lng: number | null; created_at: string }>;
       const stop = lastStop[0];
       const fallbackCity = d.city || 'somewhere';
-      const created = stop?.created_at || d.last_stop_at || new Date().toISOString();
+      const created = stop?.created_at || d.last_stop_at || d.chain_created;
       return {
         id: stop?.id ?? -d.chain_id,
         chain_id: d.chain_id,
         batch: d.batch,
         number: d.number,
         name: null,
+        place: null,
         city: stop?.city || fallbackCity,
         lat: stop?.lat ?? null,
         lng: stop?.lng ?? null,
         note: null,
         added_what: null,
+        amount_added: null,
         ended_chain: false,
+        kept_for: null,
         created_at: created,
         is_dormant: true,
       };
     })
   );
 
-  // Combine and dedupe (don't show a chain in active feed and dormant feed)
   const activeChainIds = new Set(recentStops.map(s => s.chain_id));
   const dormantFiltered = dormantEntries.filter(d => !activeChainIds.has(d.chain_id));
   const entries = [...recentStops, ...dormantFiltered];
 
-  // Build chainsForMap: all stops for chains that appear in the feed
-  const chainIds = Array.from(new Set(entries.map(e => e.chain_id)));
-  const chainsForMap: Record<number, FeedChainStops> = {};
-
-  if (chainIds.length > 0) {
-    const allStops = (await sql`
-      SELECT s.chain_id, s.city, s.lat, s.lng, s.created_at, s.ended_chain
-      FROM stops s
-      WHERE s.chain_id = ANY(${chainIds}::int[])
-      ORDER BY s.created_at ASC
-    `) as unknown as Array<{
-      chain_id: number;
-      city: string;
-      lat: number | null;
-      lng: number | null;
-      created_at: string;
-      ended_chain: boolean;
-    }>;
-
-    // Get chain metadata so we can include the starter as the first point
-    const chainMeta = (await sql`
-      SELECT id, batch, number, starter_city, starter_lat, starter_lng, created_at
-      FROM chains
-      WHERE id = ANY(${chainIds}::int[])
-    `) as unknown as Array<{
-      id: number; batch: string; number: number;
-      starter_city: string | null; starter_lat: number | null; starter_lng: number | null;
-      created_at: string;
-    }>;
-
-    for (const c of chainMeta) {
-      const stops: FeedChainStops['stops'] = [];
-      // Starter as first point if known
-      if (c.starter_city && c.starter_lat !== null && c.starter_lng !== null) {
-        stops.push({
-          city: c.starter_city,
-          lat: c.starter_lat,
-          lng: c.starter_lng,
-          created_at: c.created_at,
-          ended_chain: false,
-        });
-      }
-      // Real stops
-      for (const s of allStops.filter(x => x.chain_id === c.id)) {
-        stops.push({
-          city: s.city,
-          lat: s.lat,
-          lng: s.lng,
-          created_at: s.created_at,
-          ended_chain: s.ended_chain,
-        });
-      }
-      chainsForMap[c.id] = { id: c.id, batch: c.batch, number: c.number, stops };
-    }
-  }
-
-  return { entries, chainsForMap };
-}
-
-async function getCounts() {
-  const result = (await sql`
+  // counts
+  const counts = (await sql`
     SELECT
       (SELECT COUNT(*) FROM chains WHERE status = 'active') AS active_chains,
       (SELECT COUNT(*) FROM stops) AS total_stops
   `) as unknown as Array<{ active_chains: string; total_stops: string }>;
-  return {
-    activeChains: parseInt(result[0]?.active_chains || '0', 10),
-    totalStops: parseInt(result[0]?.total_stops || '0', 10),
-  };
+  const activeChains = parseInt(counts[0]?.active_chains || '0', 10);
+  const totalStops = parseInt(counts[0]?.total_stops || '0', 10);
+
+  return { entries, totalStops, activeChains };
 }
 
 export default async function Home() {
-  const [{ entries, chainsForMap }, counts] = await Promise.all([getFeed(), getCounts()]);
+  const { entries, totalStops, activeChains } = await getFeed();
 
   return (
     <div className="wrap">
       <Masthead />
 
-      <ActivityFeed entries={entries} chainsForMap={chainsForMap} />
+      <ActivityFeed entries={entries} totalStops={totalStops} />
 
       <section className="prose">
         <span className="note-head">so, what is this?</span>
@@ -175,22 +114,22 @@ export default async function Home() {
         <div className="head">how it works</div>
         <div className="step"><div className="num">1.</div><div className="text">You receive a small package with a card inside.</div></div>
         <div className="step"><div className="num">2.</div><div className="text">If you need what&apos;s in it, take it with our love.</div></div>
-        <div className="step"><div className="num">3.</div><div className="text">If you don&apos;t, add something of your own and send it onward.</div></div>
-        <div className="step"><div className="num">4.</div><div className="text">Either way, come back here and log where it landed.</div></div>
+        <div className="step"><div className="num">3.</div><div className="text">If you don&apos;t, add something and send it onward.</div></div>
+        <div className="step"><div className="num">4.</div><div className="text">Either way, scan the card and log where it landed.</div></div>
       </section>
 
       <section className="start-card">
         <div className="scrawl">your turn?</div>
         <h3>Start a chain.</h3>
         <p>
-          Pick something to give. We&apos;ll print you a small card with a one-time code to tuck inside.
+          Pick something to give. We&apos;ll print you a small card with a QR and one-time code to tuck inside.
           The rest is up to whoever finds it.
         </p>
         <div className="actions">
           <Link href="/start" className="primary">start a chain →</Link>
-          {counts.activeChains > 0 && (
+          {activeChains > 0 && (
             <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--ink-faded)', letterSpacing: '0.06em' }}>
-              {counts.activeChains} {counts.activeChains === 1 ? 'chain' : 'chains'} in motion · {counts.totalStops} {counts.totalStops === 1 ? 'stop' : 'stops'} logged
+              {activeChains} {activeChains === 1 ? 'chain' : 'chains'} in motion · {totalStops} {totalStops === 1 ? 'stop' : 'stops'} logged
             </span>
           )}
         </div>

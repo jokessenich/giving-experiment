@@ -21,10 +21,13 @@ export async function POST(req: NextRequest) {
     number?: number;
     code?: string;
     name?: string | null;
+    place?: string | null;
     city?: string;
     note?: string | null;
     added_what?: string | null;
+    amount_added?: number | null;
     ended_chain?: boolean;
+    kept_for?: string | null;
   };
   try {
     body = await req.json();
@@ -62,11 +65,22 @@ export async function POST(req: NextRequest) {
   if (body.added_what && body.added_what.length > 200) {
     return NextResponse.json({ error: 'shorten what you added a touch.' }, { status: 400 });
   }
+  if (body.kept_for && body.kept_for.length > 300) {
+    return NextResponse.json({ error: 'shorten that just a touch.' }, { status: 400 });
+  }
+  if (body.place && body.place.length > 100) {
+    return NextResponse.json({ error: 'shorten where you found it a bit.' }, { status: 400 });
+  }
   if (body.name && body.name.length > 60) {
     return NextResponse.json({ error: 'name is a bit long.' }, { status: 400 });
   }
   if (body.city.length > 100) {
     return NextResponse.json({ error: 'city is a bit long.' }, { status: 400 });
+  }
+  // Validate amount if present
+  let validatedAmount: number | null = null;
+  if (typeof body.amount_added === 'number' && Number.isFinite(body.amount_added) && body.amount_added >= 0 && body.amount_added < 100000) {
+    validatedAmount = body.amount_added;
   }
 
   // Look up the chain by batch + number
@@ -108,16 +122,19 @@ export async function POST(req: NextRequest) {
 
   // Insert the stop
   await sql`
-    INSERT INTO stops (chain_id, name, city, lat, lng, note, added_what, ended_chain)
+    INSERT INTO stops (chain_id, name, place, city, lat, lng, note, added_what, amount_added, ended_chain, kept_for)
     VALUES (
       ${chain.id},
       ${body.name?.trim() || null},
+      ${body.place?.trim() || null},
       ${cityNormalized},
       ${lat},
       ${lng},
       ${body.note?.trim() || null},
       ${body.added_what?.trim() || null},
-      ${body.ended_chain === true}
+      ${validatedAmount},
+      ${body.ended_chain === true},
+      ${body.ended_chain === true ? (body.kept_for?.trim() || null) : null}
     )
   `;
 

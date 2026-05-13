@@ -9,15 +9,27 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
 
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
+  const [place, setPlace] = useState('');
   const [city, setCity] = useState('');
   const [note, setNote] = useState('');
+  const [amountAdded, setAmountAdded] = useState('');
   const [addedWhat, setAddedWhat] = useState('');
   const [endedChain, setEndedChain] = useState(false);
+  const [keptFor, setKeptFor] = useState('');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
+
+    // Parse amount — accept "20", "$20", "20.00" etc
+    let parsedAmount: number | null = null;
+    const trimmed = amountAdded.trim().replace(/^\$/, '').replace(/,/g, '');
+    if (trimmed) {
+      const n = parseFloat(trimmed);
+      if (!Number.isNaN(n) && n >= 0) parsedAmount = n;
+    }
+
     try {
       const res = await fetch('/api/stops', {
         method: 'POST',
@@ -27,10 +39,13 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
           number: chain.number,
           code,
           name: name.trim() || null,
+          place: place.trim() || null,
           city: city.trim(),
           note: note.trim() || null,
-          added_what: addedWhat.trim() || null,
+          amount_added: endedChain ? null : parsedAmount,
+          added_what: endedChain ? null : (addedWhat.trim() || null),
           ended_chain: endedChain,
+          kept_for: endedChain ? (keptFor.trim() || null) : null,
         }),
       });
       if (!res.ok) {
@@ -80,16 +95,27 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
       </div>
 
       <div className="field">
-        <label htmlFor="city">where are you?</label>
-        <input
-          id="city"
-          type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          placeholder="e.g. Madison, WI"
-          required
-        />
-        <div className="hint">a city is enough — no need to be exact.</div>
+        <label htmlFor="place">where did you find it?</label>
+        <div className="inline-where">
+          <input
+            id="place"
+            type="text"
+            value={place}
+            onChange={(e) => setPlace(e.target.value)}
+            placeholder="in my mailbox"
+            autoComplete="off"
+          />
+          <span className="inline-where-conn">in</span>
+          <input
+            id="city"
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Chicago"
+            required
+          />
+        </div>
+        <div className="hint">the place is optional. the city is enough — no need to be exact.</div>
       </div>
 
       <div className="field">
@@ -105,33 +131,6 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
         />
       </div>
 
-      <div className="field">
-        <label htmlFor="added">
-          what did you add? <span className="opt">— optional</span>
-        </label>
-        <input
-          id="added"
-          type="text"
-          value={addedWhat}
-          onChange={(e) => setAddedWhat(e.target.value)}
-          placeholder="e.g. a watercolor i made of the lake"
-        />
-      </div>
-
-      <div className="field">
-        <label htmlFor="note">
-          a note <span className="opt">— optional</span>
-        </label>
-        <textarea
-          id="note"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="anything you want to leave in the world about this."
-          maxLength={500}
-        />
-        <div className="hint">whatever you write here will show up on the homepage.</div>
-      </div>
-
       <div className="field checkbox">
         <input
           id="ended"
@@ -142,6 +141,80 @@ export function LogForm({ chain }: { chain: { batch: string; number: number } })
         <label htmlFor="ended">
           I needed this and kept it. the chain ends here.
         </label>
+      </div>
+
+      {!endedChain && (
+        <>
+          <div className="field">
+            <label htmlFor="amount">
+              how much did you add? <span className="opt">— optional</span>
+            </label>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, borderBottom: '1px solid var(--rule)' }}>
+              <span style={{
+                fontFamily: 'Fraunces, serif',
+                fontSize: 22,
+                color: 'var(--ink-soft)',
+                paddingTop: 6,
+              }}>$</span>
+              <input
+                id="amount"
+                type="text"
+                inputMode="decimal"
+                value={amountAdded}
+                onChange={(e) => setAmountAdded(e.target.value)}
+                placeholder="20"
+                style={{ flex: 1, borderBottom: 'none' }}
+              />
+            </div>
+            <div className="hint">most folks add a few bucks before sending it on. but anything counts.</div>
+          </div>
+
+          <div className="field">
+            <label htmlFor="added">
+              or, something else <span className="opt">— optional</span>
+            </label>
+            <input
+              id="added"
+              type="text"
+              value={addedWhat}
+              onChange={(e) => setAddedWhat(e.target.value)}
+              placeholder="e.g. a watercolor i made, a paperback i loved..."
+            />
+            <div className="hint">art, a book, a letter — whatever felt right.</div>
+          </div>
+        </>
+      )}
+
+      {endedChain && (
+        <div className="field">
+          <label htmlFor="kept">
+            what did you do with it? <span className="opt">— only if you want to share</span>
+          </label>
+          <textarea
+            id="kept"
+            value={keptFor}
+            onChange={(e) => setKeptFor(e.target.value)}
+            placeholder="e.g. groceries this week, my daughter's medicine, a long bus ride home..."
+            maxLength={300}
+          />
+          <div className="hint">whatever you write here will show up on the homepage.</div>
+        </div>
+      )}
+
+      <div className="field">
+        <label htmlFor="note">
+          a note <span className="opt">— optional</span>
+        </label>
+        <textarea
+          id="note"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder={endedChain
+            ? "anything else you'd like to leave behind."
+            : "anything you want to leave in the world about this."}
+          maxLength={500}
+        />
+        <div className="hint">whatever you write here will show up on the homepage.</div>
       </div>
 
       <div className="submit-row">

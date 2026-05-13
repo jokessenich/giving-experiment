@@ -44,6 +44,8 @@ npm run db:setup
 
 This creates the `chains`, `stops`, and `log_attempts` tables.
 
+If you already had an earlier version of the schema deployed (without `amount_added` and `kept_for` on stops), run the migration in `db/migrations/002_added_kept_fields.sql` against your database. The two `ALTER TABLE` statements add the new columns; existing data is untouched.
+
 ### 5. run it
 
 ```bash
