@@ -1,28 +1,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Caveat:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  --paper: #f1e8d3;
-  --paper-warm: #e6d9bb;
-  --paper-deep: #d8c89c;
-  --paper-shadow: #c8b88a;
-  --ink: #1f1a12;
-  --ink-soft: #4a3f2c;
-  --ink-faded: #8a7d63;
-  --rust: #a04829;
-  --rust-deep: #823816;
-  --teal: #2e5e63;
-  --gold: #b88838;
-  --gold-pale: rgba(184, 136, 56, 0.12);
-  --moss: #5e7048;
-  --sage-deep: #485837;
-  --rule: #c8b894;
-  --rule-soft: #d8c894;
+  /* deep forest base */
+  --bg: #27583e;
+  --bg-darker: #1e4a33;
+  --bg-darkest: #163827;
+  --bg-warm: #2d6446;
+
+  /* text */
+  --ink: #f1e8d3;            /* warm cream — the new body text */
+  --ink-soft: #d9cdb0;        /* secondary text */
+  --ink-faded: #9aa496;       /* tertiary / hint text — green-tinted */
+  --ink-dim: #7a8779;         /* very quiet */
+
+  /* accents */
+  --rust: #d97042;            /* warm terracotta — primary accent */
+  --rust-deep: #b8542c;       /* hover / pressed state */
+  --rust-soft: rgba(217, 112, 66, 0.16);
+
+  --gold: #d4a13c;            /* secondary accent — highlights, dots */
+  --gold-pale: rgba(212, 161, 60, 0.12);
+
+  --moss: #8fae7f;            /* quiet sage for "who" / names */
+  --moss-deep: #6f9061;
+
+  /* lines */
+  --rule: #3a6d52;            /* subtle border in green family */
+  --rule-strong: #4a7d62;     /* stronger border */
+  --rule-soft: rgba(241, 232, 211, 0.12);
+
+  /* input surface */
+  --input-bg: #1e4a33;
+  --input-bg-focus: #234f37;
+  --input-border: #3a6d52;
+  --input-border-focus: var(--rust);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  background: var(--paper);
+  background: var(--bg);
   color: var(--ink);
   font-family: 'Fraunces', Georgia, serif;
   font-size: 18px;
@@ -32,10 +49,11 @@ html, body {
 }
 
 body {
-  background-color: var(--paper);
+  background-color: var(--bg);
   background-image:
-    radial-gradient(circle at 18% 12%, rgba(184,136,56,0.06) 0%, transparent 38%),
-    radial-gradient(circle at 82% 78%, rgba(160,72,41,0.04) 0%, transparent 40%);
+    radial-gradient(circle at 18% 12%, rgba(212,161,60,0.06) 0%, transparent 42%),
+    radial-gradient(circle at 82% 78%, rgba(217,112,66,0.05) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 0%, rgba(143,174,127,0.08) 0%, transparent 50%);
   min-height: 100vh;
 }
 
@@ -45,9 +63,9 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.55;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.10 0 0 0 0 0.07 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.94 0 0 0 0 0.91 0 0 0 0 0.83 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
 a { color: inherit; }
@@ -169,9 +187,9 @@ section.activity {
   animation: pulse 2s ease-out infinite;
 }
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(160,72,41,0.5); }
-  70% { box-shadow: 0 0 0 8px rgba(160,72,41,0); }
-  100% { box-shadow: 0 0 0 0 rgba(160,72,41,0); }
+  0% { box-shadow: 0 0 0 0 rgba(217,112,66,0.6); }
+  70% { box-shadow: 0 0 0 8px rgba(217,112,66,0); }
+  100% { box-shadow: 0 0 0 0 rgba(217,112,66,0); }
 }
 
 .feed {
@@ -214,7 +232,7 @@ section.activity {
   text-transform: uppercase;
   color: var(--rust);
   display: inline-block;
-  background: var(--paper-warm);
+  background: var(--bg-warm);
   padding: 2px 8px;
   margin-right: 10px;
   border: 1px solid var(--rust);
@@ -225,7 +243,7 @@ section.activity {
 }
 .entry-body .chain-tag:hover {
   background: var(--rust);
-  color: var(--paper);
+  color: var(--bg);
 }
 .entry-body .chain-tag.dormant {
   color: var(--ink-faded);
@@ -234,7 +252,7 @@ section.activity {
   font-style: italic;
 }
 .entry-body .who {
-  color: var(--teal);
+  color: var(--moss);
   font-style: italic;
   font-weight: 500;
 }
@@ -380,7 +398,7 @@ section.activity {
 .start-card {
   margin: 64px 0;
   padding: 32px;
-  background: var(--paper-warm);
+  background: var(--bg-warm);
   border: 1px solid var(--rule);
   position: relative;
   text-align: center;
@@ -449,7 +467,7 @@ footer.bene .stamp {
   align-items: center;
   justify-content: center;
   margin-bottom: 18px;
-  background: var(--paper-warm);
+  background: var(--bg-warm);
 }
 footer.bene .stamp-inner {
   font-family: 'JetBrains Mono', monospace;
@@ -557,7 +575,7 @@ footer.bene .colophon {
   font-family: 'Fraunces', serif;
   font-size: 19px;
   color: var(--ink);
-  background: #fdf9ed;
+  background: var(--input-bg);
   border: 1px solid var(--rule);
   border-radius: 3px;
   padding: 12px 14px;
@@ -565,7 +583,7 @@ footer.bene .colophon {
   transition: all 0.15s ease;
   font-variation-settings: "opsz" 14;
   appearance: none;
-  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
 .field input:hover, .field textarea:hover, .field select:hover {
@@ -573,8 +591,8 @@ footer.bene .colophon {
 }
 .field input:focus, .field textarea:focus, .field select:focus {
   border-color: var(--rust);
-  background: #fffcf2;
-  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04), 0 0 0 3px rgba(160, 72, 41, 0.08);
+  background: var(--input-bg-focus);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(217, 112, 66, 0.18);
 }
 .field input::placeholder, .field textarea::placeholder {
   color: var(--ink-faded);
@@ -610,17 +628,17 @@ footer.bene .colophon {
 .field .money-row {
   display: flex;
   align-items: stretch;
-  background: #fdf9ed;
+  background: var(--input-bg);
   border: 1px solid var(--rule);
   border-radius: 3px;
-  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2);
   transition: all 0.15s ease;
 }
 .field .money-row:hover { border-color: var(--ink-faded); }
 .field .money-row:focus-within {
   border-color: var(--rust);
-  background: #fffcf2;
-  box-shadow: inset 0 1px 0 rgba(41, 37, 30, 0.04), 0 0 0 3px rgba(160, 72, 41, 0.08);
+  background: var(--input-bg-focus);
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.2), 0 0 0 3px rgba(217, 112, 66, 0.18);
 }
 .field .money-row .dollar {
   font-family: 'Fraunces', serif;
@@ -671,7 +689,7 @@ footer.bene .colophon {
   font-family: 'Fraunces', serif;
   font-size: 17px;
   color: var(--ink);
-  background: var(--paper-warm);
+  background: var(--bg-warm);
   border: 1px solid var(--rule);
   padding: 16px 20px 16px 52px;
   cursor: pointer;
@@ -691,7 +709,7 @@ footer.bene .colophon {
   height: 20px;
   border: 1.5px solid var(--ink-faded);
   border-radius: 3px;
-  background: var(--paper);
+  background: var(--bg);
   transition: all 0.15s ease;
 }
 .kept-toggle:hover {
@@ -701,7 +719,7 @@ footer.bene .colophon {
   border-color: var(--rust);
 }
 .kept-toggle.active {
-  background: rgba(160,72,41,0.08);
+  background: rgba(217,112,66,0.15);
   border-color: var(--rust);
   color: var(--ink);
 }
@@ -717,7 +735,7 @@ footer.bene .colophon {
   transform: translateY(-65%) rotate(45deg);
   width: 6px;
   height: 11px;
-  border: solid var(--paper);
+  border: solid var(--ink);
   border-width: 0 2px 2px 0;
 }
 .kept-toggle .kept-label {
@@ -755,7 +773,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
 .error-msg {
   margin-top: 16px;
   padding: 14px 18px;
-  background: rgba(160,72,41,0.08);
+  background: rgba(217,112,66,0.15);
   border-left: 3px solid var(--rust);
   font-family: 'Caveat', cursive;
   font-size: 20px;
@@ -767,7 +785,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
 /* ——— Receipt (after starting a chain) ——— */
 .receipt { margin-top: 24px; }
 .receipt .card-mock {
-  background: var(--paper-warm);
+  background: var(--bg-warm);
   border: 1px dashed var(--rust);
   padding: 32px 28px;
   margin: 32px 0;
@@ -936,7 +954,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
 .journey-map {
   width: 100%;
   height: 320px;
-  background: #efe4c8;
+  background: var(--bg-darker);
   border: 1px solid var(--rule);
   margin-bottom: 32px;
   position: relative;
@@ -982,7 +1000,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   width: 12px; height: 12px;
   border-radius: 50%;
   background: var(--moss);
-  border: 2px solid var(--paper);
+  border: 2px solid var(--bg);
   box-shadow: 0 0 0 1px var(--moss);
 }
 .timeline li.starter::before { background: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
@@ -1003,7 +1021,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   font-variation-settings: "opsz" 30;
 }
 .timeline .who {
-  color: var(--teal);
+  color: var(--moss);
   font-style: italic;
   font-weight: 500;
 }
@@ -1051,7 +1069,7 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
 .log-prompt {
   margin: 48px 0 0;
   padding: 32px;
-  background: var(--paper-warm);
+  background: var(--bg-warm);
   border: 1px solid var(--rule);
   text-align: center;
 }
