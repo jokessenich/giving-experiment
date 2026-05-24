@@ -44,7 +44,7 @@ html, body {
   color: var(--ink);
   font-family: 'Fraunces', Georgia, serif;
   font-size: 18px;
-  line-height: 1.55;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   font-variation-settings: "opsz" 14, "SOFT" 30;
 }
@@ -84,25 +84,12 @@ header.mast {
   padding-bottom: 28px;
   margin-bottom: 8px;
 }
-.mast .label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  color: var(--gold);
-  margin-bottom: 18px;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-}
-.mast .label::before, .mast .label::after {
-  content: "";
-  flex: 0 1 60px;
-  height: 1px;
-  background: var(--gold);
-  opacity: 0.4;
+.mushroom-mark {
+  width: 42px;
+  height: 49px;
+  margin: 0 auto 18px;
+  display: block;
+  opacity: 0.92;
 }
 .mast h1 {
   font-family: 'Fraunces', serif;
@@ -121,32 +108,29 @@ header.mast {
 }
 .mast .tagline {
   font-family: 'Caveat', cursive;
-  font-size: 22px;
+  font-size: 23px;
   color: var(--gold);
-  margin-top: 10px;
-  font-weight: 500;
+  margin-top: 12px;
+  font-weight: 600;
   display: inline-block;
-}
-.mast .ornament {
-  text-align: center;
-  margin: 20px 0 0;
-  color: var(--gold);
-  opacity: 0.5;
-  font-size: 14px;
-  letter-spacing: 0.6em;
 }
 
 /* Subtle masthead for sub-pages */
 .mast.subtle {
   text-align: left;
   padding-bottom: 0;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
-.mast.subtle .label {
-  justify-content: flex-start;
+.mast.subtle .back-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  transition: color 0.2s ease;
 }
-.mast.subtle .label::after { display: none; }
-.mast.subtle .label::before { flex: 0 0 24px; }
+.mast.subtle .back-link:hover { color: var(--gold); }
 
 /* ——— Ledger feed ——— */
 section.activity {
@@ -345,20 +329,24 @@ section.activity {
 .prose {
   margin: 64px 0;
   position: relative;
+  max-width: 580px;
 }
 .prose .note-head {
-  font-family: 'Caveat', cursive;
-  font-size: 24px;
-  color: var(--gold);
-  display: inline-block;
-  margin-bottom: 14px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
   font-weight: 500;
+  font-size: 22px;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+  font-variation-settings: "opsz" 30;
 }
 .prose p {
   margin-bottom: 1em;
   font-size: 19px;
   color: var(--ink);
-  line-height: 1.6;
+  line-height: 1.7;
 }
 .prose p:last-child { margin-bottom: 0; }
 
@@ -409,11 +397,13 @@ section.activity {
   text-align: center;
 }
 .start-card .scrawl {
-  font-family: 'Caveat', cursive;
-  font-size: 22px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 17px;
   color: var(--gold);
   margin-bottom: 6px;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .start-card h3 {
   font-family: 'Fraunces', serif;
@@ -530,12 +520,14 @@ footer.bene .colophon {
 }
 .form-page h1 em { font-style: italic; color: var(--gold); font-weight: 500; }
 .form-page .lede {
-  font-family: 'Caveat', cursive;
-  font-size: 22px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 19px;
   color: var(--gold);
   display: inline-block;
   margin-bottom: 28px;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .form-page .intro {
   font-size: 18px;
@@ -775,11 +767,12 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   padding: 14px 18px;
   background: var(--gold-pale);
   border-left: 3px solid var(--gold);
-  font-family: 'Caveat', cursive;
-  font-size: 20px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 17px;
   color: var(--gold);
-  line-height: 1.4;
-  font-weight: 500;
+  line-height: 1.5;
+  font-weight: 400;
 }
 
 /* ——— Receipt (after starting a chain) ——— */
@@ -854,12 +847,13 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   word-break: break-all;
 }
 .receipt .instructions {
-  font-family: 'Caveat', cursive;
-  font-size: 20px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 16px;
   color: var(--ink-soft);
-  line-height: 1.45;
+  line-height: 1.5;
   margin-top: 10px;
-  font-weight: 500;
+  font-weight: 400;
 }
 .receipt .instructions p { margin-bottom: 8px; }
 
@@ -907,10 +901,12 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
 }
 .chain-page .crest .status {
   margin-top: 14px;
-  font-family: 'Caveat', cursive;
-  font-size: 22px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 19px;
   color: var(--ink-soft);
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .chain-page .crest .status.ended { color: var(--gold); }
 
@@ -1074,11 +1070,13 @@ button.submit:disabled { opacity: 0.5; cursor: wait; }
   text-align: center;
 }
 .log-prompt .scrawl {
-  font-family: 'Caveat', cursive;
-  font-size: 22px;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 17px;
   color: var(--gold);
   margin-bottom: 6px;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .log-prompt h3 {
   font-family: 'Fraunces', serif;
